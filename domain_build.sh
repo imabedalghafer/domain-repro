@@ -112,13 +112,13 @@ read -s -p 'Please enter the password used for Linux VM: ' linpassword
 echo ''
 
 echo "Creating the resource group of name $rgname .."
-#az group create --name $rgname --location $location >> /dev/null
+az group create --name $rgname --location $location >> /dev/null
 
 echo "Creating the Windows machine $winvmname"
-#az vm create -g $rgname -n $winvmname --admin-username $winusername --admin-password $winpassword --image $winimage --nsg-rule RDP --size $winsize 
+az vm create -g $rgname -n $winvmname --admin-username $winusername --admin-password $winpassword --image $winimage --nsg-rule RDP --size $winsize >> /dev/null
 
 echo "Creating the Linux machine $linuxvmname" 
-#az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-password $linpassword --image $linuximage --nsg-rule SSH --size $linsize
+az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-password $linpassword --image $linuximage --nsg-rule SSH --size $linsize >> /dev/null
 
 echo "Preparing the domain join script, it will be created on same directory as this script"
 echo "NOTE: the password for Directory Services Restore Mode will be similar to the password used for the windows machine"
@@ -128,20 +128,25 @@ then
     rm ./domain_install.ps1
     echo "Install-WindowsFeature AD-Domain-Services -IncludeManagementTools" >> domain_install.ps1
     echo "\$pass = ConvertTo-SecureString -String $winpassword -AsPlainText -Force " >> domain_install.ps1
-    echo "Install-ADDSForest -DomainName "lab.local" -DomainNetBiosName "LAB" -InstallDns:$true -NoRebootOnCompletion:$true -SafeModeAdministratorPassword $pass -Force " >> domain_install.ps1
+    echo "Install-ADDSForest -DomainName \"lab.local\" -DomainNetBiosName \"LAB\" -InstallDns:\$true -NoRebootOnCompletion:\$true -SafeModeAdministratorPassword \$pass -Force " >> domain_install.ps1
+    echo 'shutdown -r' >> domain_install.ps1
 else
     echo "Install-WindowsFeature AD-Domain-Services -IncludeManagementTools" >> domain_install.ps1
     echo "\$pass = ConvertTo-SecureString -String $winpassword -AsPlainText -Force " >> domain_install.ps1
-    echo "Install-ADDSForest -DomainName "lab.local" -DomainNetBiosName "LAB" -InstallDns:$true -NoRebootOnCompletion:$true -SafeModeAdministratorPassword $pass -Force " >> domain_install.ps1
+    echo "Install-ADDSForest -DomainName \"lab.local\" -DomainNetBiosName \"LAB\" -InstallDns:\$true -NoRebootOnCompletion:\$true -SafeModeAdministratorPassword \$pass -Force " >> domain_install.ps1
+    echo 'shutdown -r' >> domain_install.ps1
 fi
 
 echo 'Promoting the domain server, this operation might take some time ..'
-az vm run-command invoke  --command-id RunPowerShellScript --name $winvmname -g $rgname --scripts @domain_install.ps1
+az vm run-command invoke  --command-id RunPowerShellScript --name $winvmname -g $rgname --scripts @domain_install.ps1 >> /dev/null
 
 echo 'Updating the VNET to have the domain server IP as its DNS server'
-$win_private_ip=`az vm list-ip-addresses -g $rgname -n $winvmname --query [].virtualMachine.network.privateIpAddresses -o tsv`
-$vnet_name=`az network vnet list -g $rgname --query [].name -o tsv`
-az network vnet update -g $rgname -n $vnet_name --dns-servers $win_private_ip 168.63.129.16 
+win_private_ip=`az vm list-ip-addresses -g $rgname -n $winvmname --query [].virtualMachine.network.privateIpAddresses -o tsv`
+vnet_name=`az network vnet list -g $rgname --query [].name -o tsv`
+az network vnet update -g $rgname -n $vnet_name --dns-servers $win_private_ip 168.63.129.16 >> /dev/null
+
+echo 'Waiting for the windows machine for 3 min'
+sleep 180
 
 echo 'Executing the default join domain script..'
  az vm extension set \
@@ -149,5 +154,5 @@ echo 'Executing the default join domain script..'
   --vm-name $linuxvmname \
   --name customScript \
   --publisher Microsoft.Azure.Extensions \
-  --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/imabedalghafer/sles_ha_scripts/master/config_iscsi_target.sh"],"commandToExecute": "./config_iscsi_target.sh"}' 
+  --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/imabedalghafer/domain-repro/main/test.sh"],"commandToExecute": "./test.sh"}' >> /dev/null
 
