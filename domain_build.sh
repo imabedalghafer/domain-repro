@@ -117,9 +117,6 @@ az group create --name $rgname --location $location >> /dev/null
 echo "Creating the Windows machine $winvmname"
 az vm create -g $rgname -n $winvmname --admin-username $winusername --admin-password $winpassword --image $winimage --nsg-rule RDP --size $winsize >> /dev/null
 
-echo "Creating the Linux machine $linuxvmname" 
-az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-password $linpassword --image $linuximage --nsg-rule SSH --size $linsize >> /dev/null
-
 echo "Preparing the domain join script, it will be created on same directory as this script"
 echo "NOTE: the password for Directory Services Restore Mode will be similar to the password used for the windows machine"
 
@@ -147,6 +144,10 @@ az network vnet update -g $rgname -n $vnet_name --dns-servers $win_private_ip 16
 
 echo 'Waiting for the windows machine for 3 min'
 sleep 180
+
+echo "Creating the Linux machine $linuxvmname" 
+az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-password $linpassword --image $linuximage --nsg-rule SSH --size $linsize >> /dev/null
+
 
 echo 'Executing the default join domain script..'
  az vm extension set \
