@@ -26,7 +26,7 @@ function rhel7_join_domain()
     then
         echo "Domain $verify is discovered" >> $logfile
         echo "Trying to check for the certificate for the admin user using kinit" >> $logfile
-        echo "$domain_admin_password" | kinit $domain_admin_username@$domain_name 
+        echo "$domain_admin_password" | kinit $domain_admin_username@$domain_name >> $logfile
         if [ $? == 0 ]
         then
             echo "The credentials cache has been updated successfully" >> $logfile
@@ -34,13 +34,13 @@ function rhel7_join_domain()
             echo "$domain_admin_password" | realm join --verbose $domain_name -U "$domain_admin_username@$domain_name" >> $logfile
             if [ $? == 0 ]
             then 
-                echo "We are successfully joined to the domain ^_^" >> $logfile
-                echo "Enjoy your day :) " >> $logfile
-                echo "Updating the sudo configuration to add the user to the sudo users"
+                echo "Updating the sudo configuration to add the user to the sudo users" >> $logfile
                 echo "$domain_admin_username@$nocaps_domain_name   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
                 echo "Copying the krb5.conf and sssd.conf to the /root directory as a reference" >> $logfile
                 cp /etc/krb5.conf /root/
                 cp /etc/sssd/sssd.conf /root/
+                echo "We are successfully joined to the domain ^_^" >> $logfile
+                echo "Enjoy your day :) " >> $logfile
                 #echoing the messages for the stdout of custom script
                 echo "We are successfully joined to the domain ^_^"
             else

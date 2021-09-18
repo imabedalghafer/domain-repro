@@ -4,7 +4,7 @@
 #We are following the below document as a reference for domain joining:
 #https://docs.microsoft.com/en-us/azure/active-directory-domain-services/join-rhel-linux-vm
 
-rgname='domain-repro-rg'
+rgname='domain-repro-rg1'
 location='eastus'
 winsize='Standard_d2s_v3'
 linsize='Standard_b1ms'
@@ -58,6 +58,9 @@ read -p 'Please enter the distro name that you want to use like: ' distro
 case $distro in
     rhel7)
         linuximage='RedHat:rhel-raw:7-raw:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O rhel-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/rhel-domain-join.sh
+        filename='rhel-domain-join.sh'
         ;;
     rhel8)
         linuximage='RedHat:rhel-raw:8-raw:latest'
@@ -150,10 +153,5 @@ az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-pa
 
 
 echo 'Executing the default join domain script..'
- az vm extension set \
-  --resource-group $rgname \
-  --vm-name $linuxvmname \
-  --name customScript \
-  --publisher Microsoft.Azure.Extensions \
-  --protected-settings '{"fileUris": ["https://raw.githubusercontent.com/imabedalghafer/domain-repro/main/test.sh"],"commandToExecute": "./test.sh"}' >> /dev/null
+az vm run-command invoke -g $rgname -n $linuxvmname --command-id RunShellScript --scripts @$filename --parameters LAB.LOCAL $winusername $winpassword
 
