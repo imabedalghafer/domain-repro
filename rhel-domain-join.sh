@@ -71,23 +71,33 @@ function rhel6_join_domain()
 echo "#######################" >> $logfile
 date >> $logfile
 echo "Trying to determine the RHEL version the machine using" >> $logfile
-source /etc/os-release
-major_version=`echo $VERSION_ID | cut -d . -f1`
-case $major_version in
-    8)
-        echo "The machine running RHEL 8 , executing function for that version .." >> $logfile
-        rhel7_join_domain
-        ;;
-    7)
-        echo "The machine running RHEL 7 , executing function for that version .." >> $logfile
-        rhel7_join_domain
-        ;;  
-    6)
-        echo "The machine running RHEL 8 , executing function for that version .." >> $logfile
+echo "Checking if the os-release file is available, else check on redhat-release file" >> $logfile
+if [ -f /etc/os-release ]
+then
+    source /etc/os-release
+    major_version=`echo $VERSION_ID | cut -d . -f1`
+    case $major_version in
+        8)
+            echo "The machine running RHEL 8 , executing function for that version .." >> $logfile
+            rhel7_join_domain
+            ;;
+        7)
+            echo "The machine running RHEL 7 , executing function for that version .." >> $logfile
+            rhel7_join_domain
+            ;;  
+        6)
+            echo "The machine running RHEL 8 , executing function for that version .." >> $logfile
+            rhel6_join_domain
+            ;;
+        *)
+            echo "Not a RHEL machine .." >> $logfile
+            exit 4
+            ;;
+    esac
+else
+    os_version=`cat /etc/redhat-release | grep -o 6`
+    if [ $os_version == 6 ]
+    then
         rhel6_join_domain
-        ;;
-    *)
-        echo "Not a RHEL machine .." >> $logfile
-        exit 4
-        ;;
-esac
+    fi
+fi
