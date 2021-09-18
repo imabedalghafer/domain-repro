@@ -19,6 +19,7 @@ For Windows when asked you can enter any of the below options:
 
 For Linux machines when asked you can enter any of the below names:
 ------------
+    - rhel6 --> for RHEL 6 RAW linux machine
     - rhel7 --> for RHEL 7 RAW linux machine
     - rhel8 --> for RHEL 8 RAW linux machine
     - sles12 --> for SLES 12 SP5 machine
@@ -56,6 +57,12 @@ echo ''
 read -p 'Please enter the distro name that you want to use like: ' distro
 
 case $distro in
+    rhel6)
+        linuximage='RedHat:RHEL:6.10:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O rhel-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/rhel-domain-join.sh
+        filename='rhel-domain-join.sh'
+        ;;
     rhel7)
         linuximage='RedHat:rhel-raw:7-raw:latest'
         echo "Downloading the domain join script for this distro"
@@ -64,6 +71,9 @@ case $distro in
         ;;
     rhel8)
         linuximage='RedHat:rhel-raw:8-raw:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O rhel-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/rhel-domain-join.sh
+        filename='rhel-domain-join.sh'
         ;;
     ubuntu18)
         linuximage='Canonical:UbuntuServer:18.04-LTS:latest'

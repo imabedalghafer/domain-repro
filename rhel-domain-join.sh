@@ -76,7 +76,7 @@ major_version=`echo $VERSION_ID | cut -d . -f1`
 case $major_version in
     8)
         echo "The machine running RHEL 8 , executing function for that version .." >> $logfile
-        rhel8_join_domain
+        rhel7_join_domain
         ;;
     7)
         echo "The machine running RHEL 7 , executing function for that version .." >> $logfile
