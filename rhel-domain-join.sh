@@ -99,5 +99,8 @@ else
     if [ $os_version == 6 ]
     then
         rhel6_join_domain
+    else
+        echo "Not a RHEL machine .." >> $logfile
+        exit 4  
     fi
 fi
