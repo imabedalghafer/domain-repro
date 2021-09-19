@@ -4,7 +4,7 @@
 #We are following the below document as a reference for domain joining:
 #https://docs.microsoft.com/en-us/azure/active-directory-domain-services/join-rhel-linux-vm
 
-rgname='domain-repro-rg1'
+rgname='domain-repro-rg'
 location='eastus'
 winsize='Standard_d2s_v3'
 linsize='Standard_b1ms'
