@@ -24,7 +24,7 @@ function rhel7_join_domain()
     nocaps_domain_name=`realm discover $domain_name | grep 'domain-name:' | cut -d : -f2 | tr -d [:space:]`
     if [ $verify == $domain_name ] && [ $? == 0 ]
     then
-        echo "Domain $verify is discovered" >> $logfile
+        echo "Domain $verify was discovered" >> $logfile
         echo "Trying to check for the certificate for the admin user using kinit" >> $logfile
         echo "$domain_admin_password" | kinit $domain_admin_username@$domain_name >> $logfile
         if [ $? == 0 ]
@@ -63,9 +63,90 @@ function rhel6_join_domain()
     #Take a backup of hosts file
     cp /etc/hosts /etc/hosts-`date +"%d-%m-%y"`
     echo "127.0.0.1    $hostname    $hostname.lab.local" >> /etc/hosts
+    echo "Setting the locale values" >> $logfile
+    export LC_CTYPE=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
     echo "Installing the required packages" >> $logfile
+    echo "Updating infra package to avoid SSL errors" >> $logfile
+    yum update -y --disablerepo='*' --enablerepo='*microsoft*' >> $logfile
+    yum clean all >> $logfile
+    yum repolist >> $logfile
     yum install -y adcli sssd authconfig krb5-workstation >> $logfile
+    nocaps_domain_name=`adcli info LAB.LOCAL | grep domain-name  | cut -d = -f2 | tr -d [:space:]`
+    caps_domain_name=${nocaps_domain_name^^}
+    if [ $caps_domain_name == $domain_name ]
+    then
+        echo "Domain $caps_domain_name was discovered" >> $logfile
+        echo "Creating the krb5.conf file" >> $logfile
+        echo "getting the user credentials cache using kinit" >> $logfile
+        echo $domain_admin_password | kinit $domain_admin_username@$domain_name >> $logfile
+        cp /etc/krb5.conf /etc/krb5.conf-`date +"%d-%m-%y"`
+        #added without a space to match the EOF use in bash , reference bash(1)
+        cat > /etc/krb5.conf <<EOF 
+[logging]
+ default = FILE:/var/log/krb5libs.log
+ kdc = FILE:/var/log/krb5kdc.log
+ admin_server = FILE:/var/log/kadmind.log
 
+[libdefaults]
+ default_realm = $domain_name
+ dns_lookup_realm = true
+ dns_lookup_kdc = true
+ ticket_lifetime = 24h
+ renew_lifetime = 7d
+ forwardable = true
+ rdns = false
+
+[realms]
+ $domain_name = {
+ kdc = $domain_name
+ admin_server = $domain_name
+ }
+
+[domain_realm]
+ .$domain_name = $domain_name
+ $domain_name = $domain_name
+EOF
+        echo "Creating the sssd.conf file" >> $logfile
+        cat > /etc/sssd/sssd.conf << EOF
+[sssd]
+ services = nss, pam, ssh, autofs
+ config_file_version = 2
+ domains = $domain_name
+
+[domain/$domain_name]
+ id_provider = ad
+
+EOF
+        chmod 600 /etc/sssd/sssd.conf
+        chown root:root /etc/sssd/sssd.conf
+        echo "Updaing the PAM to use the SSSD " >> $logfile
+        authconfig --enablesssd --enablesssdauth --update
+        echo "Joining the domain to create the krb5.keytab file" >> $logfile
+        echo -n $domain_admin_password | adcli join $domain_name -U $domain_admin_username --stdin-password >> $logfile
+        if [ $? == 0 ]
+        then
+            echo "Restarting the service to make sure everything is ready" >> $logfile
+            service sssd start >> $logfile
+            if [ $? == 0 ]
+            then 
+                chkconfig sssd on >> $logfile
+                echo "Updating the sudo configuration to add the user to the sudo users" >> $logfile
+                echo "$domain_admin_username@$nocaps_domain_name   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
+                echo "Trust me , that was a hard job !! " >> $logfile
+                echo "We are done and now you can use the joined domain machine " >> $logfile
+                echo "Enjoy your day and happy repro ^_^" >> $logfile
+            else
+                echo "Failed to start the service, please check the logs" >> $logfile
+                exit 5
+            fi
+        else
+            echo "Failed to join the domain, please check the logs" >> $logfile
+            exit 2
+        fi
+    else
+        echo "There is an issue , please check the logs" >> $logfile
+    fi
 }
 
 echo "#######################" >> $logfile
