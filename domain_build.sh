@@ -95,9 +95,15 @@ case $distro in
         ;;
     centos7)
         linuximage='OpenLogic:CentOS:7_9:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O centos-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/centos-domain-join.sh
+        filename='centos-domain-join.sh'
         ;;
     centos8)
         linuximage='OpenLogic:CentOS:8_4:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O centos-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/centos-domain-join.sh
+        filename='centos-domain-join.sh'
         ;;
     *)
         #the image urn has 3 : , we will check if the urn entered has this number
