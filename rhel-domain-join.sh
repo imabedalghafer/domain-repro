@@ -160,6 +160,11 @@ then
     case $major_version in
         8)
             echo "The machine running RHEL 8 , executing function for that version .." >> $logfile
+            echo "Enabling the AD-SUPPORT policy in case the domain server was windows server 2016" >> $logfile
+            echo "Refernce document : https://access.redhat.com/solutions/5728591" >> $logfile
+            update-crypto-policies --set DEFAULT:AD-SUPPORT
+            echo "Installing the adcli in addition, as it is required by Centos 8" >> $logfile
+            yum install -y adcli >> $logfile
             rhel7_join_domain
             ;;
         7)
@@ -167,7 +172,7 @@ then
             rhel7_join_domain
             ;;  
         6)
-            echo "The machine running RHEL 8 , executing function for that version .." >> $logfile
+            echo "The machine running RHEL 6 , executing function for that version .." >> $logfile
             rhel6_join_domain
             ;;
         *)
