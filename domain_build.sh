@@ -183,5 +183,12 @@ az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-pa
 
 
 echo 'Executing the default join domain script..'
-az vm run-command invoke -g $rgname -n $linuxvmname --command-id RunShellScript --scripts @$filename --parameters LAB.LOCAL $winusername $winpassword
+az vm run-command invoke -g $rgname -n $linuxvmname --command-id RunShellScript --scripts @$filename --parameters LAB.LOCAL $winusername $winpassword >> script_result.log
+
+if [ -f $filename ]
+then
+    echo "Deleting the file $filename"
+fi
+
+echo "We are done ^_^ , happy troubleshooting .."
 
