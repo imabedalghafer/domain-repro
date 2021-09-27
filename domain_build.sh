@@ -133,6 +133,20 @@ echo ''
 echo "Creating the resource group of name $rgname .."
 az group create --name $rgname --location $location >> /dev/null
 
+if [ $winversion == '2k16' ]
+then
+    if [ $distro == 'rhel8' ] || [ $distro == 'centos8' ]
+    then
+        echo "You have selected windows server 2016 as a domain server with $distro"
+        echo "When trying to run kinit, the command would fail with error: kinit: KDC has no support for encryption type while getting initial credentials"
+        echo "This issue is mentioned in https://access.redhat.com/solutions/5728591"
+        echo "Thus we would enable the 'AD-SUPPORT' crypto policy on top of the 'DEFAULT'"
+        echo "The join domain script will use this command to perform this action : update-crypto-policies --set DEFAULT:AD-SUPPORT"
+        echo "This is to update you about this out of doc command and this could be also with customer side."
+        echo "For more details check on the RHEL solution above ..."
+    fi
+fi
+
 echo "Creating the Windows machine $winvmname"
 az vm create -g $rgname -n $winvmname --admin-username $winusername --admin-password $winpassword --image $winimage --nsg-rule RDP --size $winsize >> /dev/null
 
