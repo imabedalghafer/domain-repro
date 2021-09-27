@@ -30,6 +30,8 @@ function oracle7_join_domain()
         if [ $? == 0 ]
         then
             echo "The credentials cache has been updated successfully" >> $logfile
+            echo "Waiting for 1 min before trying to join the machine to the domain" >> $logfile
+            sleep 60
             echo "Trying to join domain now .." >> $logfile
             echo "$domain_admin_password" | realm join --verbose $domain_name -U "$domain_admin_username@$domain_name" >> $logfile
             if [ $? == 0 ]
