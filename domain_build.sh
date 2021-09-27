@@ -77,9 +77,15 @@ case $distro in
         ;;
     ubuntu18)
         linuximage='Canonical:UbuntuServer:18.04-LTS:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O ubuntu-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/ubuntu-domain-join.sh
+        filename='ubuntu-domain-join.sh'
         ;;
     ubuntu20)
         linuximage='Canonical:0001-com-ubuntu-server-focal:20_04-lts:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O ubuntu-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/ubuntu-domain-join.sh
+        filename='ubuntu-domain-join.sh'
         ;;
     sles12)
         linuximage='SUSE:sles-12-sp5:gen1:latest'
