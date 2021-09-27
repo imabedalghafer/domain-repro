@@ -95,9 +95,15 @@ case $distro in
         ;;
     oracle7)
         linuximage='Oracle:Oracle-Linux:ol79:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O oracle-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/oracle-domain-join.sh
+        filename='oracle-domain-join.sh'
         ;;
     oracle8)
         linuximage='Oracle:Oracle-Linux:ol84-lvm:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O oracle-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/oracle-domain-join.sh
+        filename='oracle-domain-join.sh'
         ;;
     centos7)
         linuximage='OpenLogic:CentOS:7_9:latest'
