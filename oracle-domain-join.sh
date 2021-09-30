@@ -11,7 +11,7 @@ domain_name=$1
 domain_admin_username=$2
 domain_admin_password=$3
 
-function rhel7_join_domain()
+function oracle7_join_domain()
 {
     hostname=`hostname`
     #Take a backup of hosts file
@@ -59,7 +59,7 @@ function rhel7_join_domain()
     fi
 }
 
-function rhel6_join_domain()
+function oracle6_join_domain()
 {
     hostname=`hostname`
     #Take a backup of hosts file
@@ -153,7 +153,7 @@ EOF
 
 echo "#######################" >> $logfile
 date >> $logfile
-echo "Trying to determine the RHEL version the machine using" >> $logfile
+echo "Trying to determine the Oracle version the machine using" >> $logfile
 echo "Checking if the os-release file is available, else check on redhat-release file" >> $logfile
 if [ -f /etc/os-release ]
 then
@@ -161,34 +161,34 @@ then
     major_version=`echo $VERSION_ID | cut -d . -f1`
     case $major_version in
         8)
-            echo "The machine running RHEL 8 , executing function for that version .." >> $logfile
+            echo "The machine running Oracle 8 , executing function for that version .." >> $logfile
             echo "Enabling the AD-SUPPORT policy in case the domain server was windows server 2016" >> $logfile
             echo "Refernce document : https://access.redhat.com/solutions/5728591" >> $logfile
             update-crypto-policies --set DEFAULT:AD-SUPPORT
             echo "Installing the adcli in addition, as it is required by Centos 8" >> $logfile
             yum install -y adcli >> $logfile
-            rhel7_join_domain
+            oracle7_join_domain
             ;;
         7)
-            echo "The machine running RHEL 7 , executing function for that version .." >> $logfile
-            rhel7_join_domain
+            echo "The machine running Oracle 7 , executing function for that version .." >> $logfile
+            oracle7_join_domain
             ;;  
         6)
-            echo "The machine running RHEL 6 , executing function for that version .." >> $logfile
-            rhel6_join_domain
+            echo "The machine running Oracle 6 , executing function for that version .." >> $logfile
+            oracle6_join_domain
             ;;
         *)
-            echo "Not a RHEL machine .." >> $logfile
+            echo "Not a Oracle machine .." >> $logfile
             exit 4
             ;;
     esac
 else
-    os_version=`cat /etc/redhat-release | grep -o 6`
+    os_version=`cat /etc/oracle-release | grep -o 6`
     if [ $os_version == 6 ]
     then
-        rhel6_join_domain
+        oracle6_join_domain
     else
-        echo "Not a RHEL machine .." >> $logfile
+        echo "Not a Oracle machine .." >> $logfile
         exit 4  
     fi
 fi
