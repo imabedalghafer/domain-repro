@@ -135,6 +135,11 @@ EOF
                 chkconfig sssd on >> $logfile
                 echo "Updating the sudo configuration to add the user to the sudo users" >> $logfile
                 echo "$domain_admin_username@$nocaps_domain_name   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
+                echo "Updating the config file for not to use the FQDN in user login" >> $logfile
+                cp /etc/sssd/sssd.conf /etc/sssd/sssd.conf-`date +"%d-%m-%y"`
+                sed -i '/^use_fully_qualified_names/ s/True/False/g ' sssd.conf
+                systemctl restart sssd
+                systemctl enable sssd
                 echo "Trust me , that was a hard job !! " >> $logfile
                 echo "We are done and now you can use the joined domain machine " >> $logfile
                 echo "Enjoy your day and happy repro ^_^" >> $logfile
