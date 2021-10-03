@@ -89,9 +89,13 @@ case $distro in
         ;;
     sles12)
         linuximage='SUSE:sles-12-sp5:gen1:latest'
+        wget -O ubuntu-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/sles-domain-join.sh
+        filename='sles-domain-join.sh'
         ;;    
     sles15)
         linuximage='SUSE:sles-15-sp3:gen1:latest'
+        wget -O ubuntu-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/sles-domain-join.sh
+        filename='sles-domain-join.sh'
         ;;
     oracle7)
         linuximage='Oracle:Oracle-Linux:ol79:latest'
