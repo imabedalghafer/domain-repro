@@ -63,13 +63,9 @@ netplan apply
 			#Disable rdns
 			cp /etc/krb5.conf /etc/krb5.conf_bak-`date +"%d-%m-%y"`
 			sed -i '2 i rdns=no' /etc/krb5.conf
-<<<<<<< HEAD
-			            
-=======
             
 			echo "Waiting for 1 min before trying to join the machine to the domain" >> $logfile
             sleep 60
->>>>>>> a8ef55ae3e636c15d21ef54268ed6b51ca3c2772
 			echo "Trying to join domain now .." >> $logfile
 			echo "$domain_admin_password" | realm join --verbose $domain_name -U "$domain_admin_username@$domain_name" >> $logfile
 			if [ $? == 0 ]
