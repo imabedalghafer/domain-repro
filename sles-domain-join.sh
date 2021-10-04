@@ -165,6 +165,8 @@ EOF
     echo "$domain_admin_password" | kinit $domain_admin_username@$domain_name >> $logfile
     if [ $? == 0 ]
     then
+        echo "Waiting for 1 min before joining the domain " >> $logfile
+        sleep 60
         echo "Trying to join the domain .." >> $logfile
         echo $domain_admin_password | net ads join $domain_name -U $domain_admin_username
         if [ $? == 0 ]
@@ -208,7 +210,7 @@ then
     case $major_version in
         15)
             echo "The machine running SLES 15 , executing function for that version .." >> $logfile
-            sles15_join_domain
+            sles12_join_domain
             ;;
         12)
             echo "The machine running SLES 12 , executing function for that version .." >> $logfile
