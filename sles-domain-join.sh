@@ -11,6 +11,7 @@ domain_name=$1
 domain_admin_username=$2
 domain_admin_password=$3
 no_caps_domain_name=${domain_name,,}
+workgroup_name=`echo $domain_name | cut -d . -f1`
 
 #function sles15_join_domain()
 #{
@@ -114,7 +115,7 @@ EOF
     echo "Updating the smb.conf file " >> $logfile
     cat >  /etc/samba/smb.conf << EOF
 [global]
-        workgroup = LAB
+        workgroup = $workgroup_name
         kerberos method = secrets and keytab
         realm = $domain_name
         security = ADS
