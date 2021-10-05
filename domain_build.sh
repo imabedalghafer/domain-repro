@@ -134,6 +134,9 @@ case $distro in
             distro=$publisher
             echo "You selected an image from publisher $publisher with offer $offer"
             echo "The VM name that will be created will have the name of $distro-client"
+            echo "Downloading the OS detector script "
+            wget -O os-detector.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/os-detector.sh
+            filename='os-detector.sh'
         else
             echo 'Please check the image urn and try again , exsiting..'
             exit 2
