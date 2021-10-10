@@ -68,15 +68,19 @@ else
     then
         echo "it is a Centos 6 machine " >> $logfile
         echo "Downloading and executing its file " >> $logfile
+        echo "Installing wget from yum , in case it was not there" >> $logfile
+        yum install -y wget
         wget -O centos-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/centos-domain-join.sh
         ./centos-domain-join.sh $domain_name $domain_admin_username $domain_admin_password 
     else
-        echo "Trying to check if Oracle 6 machine"
-        os_version=`cat /etc/oracle-release | grep -o 6`
+        echo "Trying to check if Oracle 6 machine" >> $logfile
+        os_version=`cat /etc/oracle-release | grep -o 6` >> $logfile
         if [ $os_version == 6 ]
         then
             echo "it is a Oracle 6 machine " >> $logfile
             echo "Downloading and executing its file " >> $logfile
+            echo "Installing wget from yum , in case it was not there" >> $logfile
+            yum install -y wget
             wget -O oracle-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/oracle-domain-join.sh
             ./oracle-domain-join.sh $domain_name $domain_admin_username $domain_admin_password 
         else
@@ -86,6 +90,8 @@ else
             then
                 echo "it is a Redhat 6 machine " >> $logfile
                 echo "Downloading and executing its file " >> $logfile
+                echo "Installing wget from yum , in case it was not there" >> $logfile
+                yum install -y wget
                 wget -O rhel-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/rhel-domain-join.sh
                 ./rhel-domain-join.sh $domain_name $domain_admin_username $domain_admin_password 
             else
