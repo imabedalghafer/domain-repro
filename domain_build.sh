@@ -4,7 +4,7 @@
 #We are following the below document as a reference for domain joining:
 #https://docs.microsoft.com/en-us/azure/active-directory-domain-services/join-rhel-linux-vm
 
-rgname='domain-repro-rg'
+rgname='domain-repro-rg1'
 location='eastus'
 winsize='Standard_d2s_v3'
 linsize='Standard_b1ms'
@@ -26,8 +26,10 @@ For Linux machines when asked you can enter any of the below names:
     - sles15 --> for SLES 15 SP3 machine
     - ubuntu18 --> for Ubuntu 18 LTS
     - ubuntu20 --> for Ubuntu 20 LTS 
+    - oracle6 --> For Oracle 6.10 machine
     - oracle7 --> for Oracle 7.9 machine
     - oracle8 --> for Oracle 8.4 LVM machine
+    - centos6 --> For centos 6.10 machine
     - centos7 --> for Centos 7.9 machine
     - centos8 --> for Centos 8.4 machine
     - you can also provide the URN for the Linux image to use if non of the above images matching your scenario
@@ -96,6 +98,12 @@ case $distro in
         linuximage='SUSE:sles-15-sp3:gen1:latest'
         wget -O sles-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/sles-domain-join.sh
         filename='sles-domain-join.sh'
+        ;;
+    oracle6)
+        linuximage='Oracle:Oracle-Linux:6.10:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O oracle-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/oracle-domain-join.sh
+        filename='oracle-domain-join.sh'
         ;;
     oracle7)
         linuximage='Oracle:Oracle-Linux:ol79:latest'
