@@ -109,6 +109,12 @@ case $distro in
         wget -O oracle-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/oracle-domain-join.sh
         filename='oracle-domain-join.sh'
         ;;
+    centos6)
+        linuximage='OpenLogic:CentOS:6.10:latest'
+        echo "Downloading the domain join script for this distro"
+        wget -O centos-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/centos-domain-join.sh
+        filename='centos-domain-join.sh'
+        ;;
     centos7)
         linuximage='OpenLogic:CentOS:7_9:latest'
         echo "Downloading the domain join script for this distro"

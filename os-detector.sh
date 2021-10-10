@@ -66,12 +66,22 @@ else
     os_version=`cat /etc/redhat-release | grep -o 6`
     if [ $os_version == 6 ]
     then
-        echo "it is a RHEL 6 machine " >> $logfile
+        echo "it is a RHEL/Centos 6 machine " >> $logfile
         echo "Downloading and executing its file " >> $logfile
         wget -O rhel-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/rhel-domain-join.sh
-        ./rhel-domain-join.sh $domain_name $domain_admin_username $domain_admin_password
+        ./rhel-domain-join.sh $domain_name $domain_admin_username $domain_admin_password 
     else
-        echo "Not able to determine the version , manual check is needed .." >> $logfile
-        exit 4  
+        echo "Trying to check if Centos 6 machine"
+        os_version=`cat /etc/centos-release | grep -o 6`
+        if [ $os_version == 6 ]
+        then
+            echo "it is a Centos 6 machine " >> $logfile
+            echo "Downloading and executing its file " >> $logfile
+            wget -O centos-domain-join.sh https://raw.githubusercontent.com/imabedalghafer/domain-repro/master/centos-domain-join.sh
+            ./centos-domain-join.sh $domain_name $domain_admin_username $domain_admin_password 
+        else
+            echo "Not able to determine the version , manual check is needed .." >> $logfile
+            exit 4  
+        fi
     fi
 fi

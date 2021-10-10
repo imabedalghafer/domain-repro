@@ -123,6 +123,7 @@ EOF
 
 [domain/$domain_name]
  id_provider = ad
+ use_fully_qualified_names = False
 
 EOF
         chmod 600 /etc/sssd/sssd.conf
