@@ -174,6 +174,8 @@ EOF
         then
             echo "Updating the sudo configuration to add the user to the sudo users" >> $logfile
             echo "$domain_admin_username@$no_caps_domain_name   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
+            #added because when not using the FQDN the OS not able to detect that this is a domain user.
+            echo "$domain_admin_username   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
             echo "Stopping and disabling nscd service" >> $logfile
             systemctl stop nscd 
             systemctl disable nscd 

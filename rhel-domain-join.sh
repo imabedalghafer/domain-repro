@@ -38,6 +38,8 @@ function rhel7_join_domain()
             then 
                 echo "Updating the sudo configuration to add the user to the sudo users" >> $logfile
                 echo "$domain_admin_username@$nocaps_domain_name   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
+                #added because when not using the FQDN the OS not able to detect that this is a domain user.
+                echo "$domain_admin_username   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
                 echo "Updating the config file for not to use the FQDN in user login" >> $logfile
                 cp /etc/sssd/sssd.conf /etc/sssd/sssd.conf-`date +"%d-%m-%y"`
                 sed -i '/^use_fully_qualified_names/ s/True/False/g ' /etc/sssd/sssd.conf

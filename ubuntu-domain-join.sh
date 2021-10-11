@@ -84,6 +84,8 @@ netplan apply
 				sed -i '/pam_sss.so*/a session required pam_mkhomedir.so skel=/etc/skel/ umask=0077' /etc/pam.d/common-session
 				echo "Updating the sudo configuration to add the user to the sudo users" >> $logfile
 				echo "$domain_admin_username@$nocaps_domain_name   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
+				#added because when not using the FQDN the OS not able to detect that this is a domain user.
+                echo "$domain_admin_username   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
 				echo "Copying the krb5.conf and sssd.conf to the /root directory as a reference" >> $logfile
 				cp /etc/krb5.conf /root/
 				cp /etc/sssd/sssd.conf /root/
@@ -173,6 +175,8 @@ netplan apply
 				sed -i '/pam_sss.so*/a session required pam_mkhomedir.so skel=/etc/skel/ umask=0077' /etc/pam.d/common-session
 				echo "Updating the sudo configuration to add the user to the sudo users" >> $logfile
 				echo "$domain_admin_username@$nocaps_domain_name   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
+				#added because when not using the FQDN the OS not able to detect that this is a domain user.
+                echo "$domain_admin_username   ALL=(ALL)    NOPASSWD:ALL" >> /etc/sudoers.d/domain-join
 				echo "Copying the krb5.conf and sssd.conf to the /root directory as a reference" >> $logfile
 				cp /etc/krb5.conf /root/
 				cp /etc/sssd/sssd.conf /root/
