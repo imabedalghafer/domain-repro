@@ -8,6 +8,7 @@ rgname='domain-repro-rg'
 location='eastus'
 winsize='Standard_d2s_v3'
 linsize='Standard_b1ms'
+nsg_name='accessNSG'
 echo 'Welcome to the repro script ^_^'
 cat << EOF
 You can select both the image name for windows and the image name for Linux
@@ -166,12 +167,12 @@ echo ''
 echo "Creating the resource group of name $rgname .."
 az group create --name $rgname --location $location >> /dev/null
 
-myip=`curl https://v4.ident.me/`
-az network nsg create --resource-group $rgname --location $location --name winNSG
+myip=`curl https://api.ipify.org`
+az network nsg create --resource-group $rgname --location $location --name $nsg_name
 
-az network nsg rule create --name winaccess --nsg-name winNSG --resource-group $rgname \
+az network nsg rule create --name accessRule --nsg-name $nsg_name --resource-group $rgname \
        --priority 100 --source-address-prefixes $myip/32  --source-port-ranges '*'    \
-       --destination-address-prefixes  '*'  --destination-port-ranges '3389'          \
+       --destination-address-prefixes  '*'  --destination-port-ranges '22' '3389'          \
        --direction Inbound --protocol Tcp
 
 if [ $winversion == '2k16' ]
@@ -189,7 +190,7 @@ then
 fi
 
 echo "Creating the Windows machine $winvmname"
-az vm create -g $rgname -n $winvmname --admin-username $winusername --admin-password $winpassword --image $winimage --nsg winNSG --size $winsize >> /dev/null
+az vm create -g $rgname -n $winvmname --admin-username $winusername --admin-password $winpassword --image $winimage --nsg $nsg_name --size $winsize >> /dev/null
 
 echo "Preparing the domain join script, it will be created on same directory as this script"
 echo "NOTE: the password for Directory Services Restore Mode will be similar to the password used for the windows machine"
@@ -216,11 +217,11 @@ win_private_ip=`az vm list-ip-addresses -g $rgname -n $winvmname --query [].virt
 vnet_name=`az network vnet list -g $rgname --query [].name -o tsv`
 az network vnet update -g $rgname -n $vnet_name --dns-servers $win_private_ip 168.63.129.16 >> /dev/null
 
-echo 'Waiting for the windows machine for 3 min'
-sleep 180
+echo 'Waiting for the windows machine for 2 min'
+sleep 120
 
 echo "Creating the Linux machine $linuxvmname" 
-az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-password $linpassword --image $linuximage --nsg-rule SSH --size $linsize >> /dev/null
+az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-password $linpassword --image $linuximage --nsg $nsg_name --size $linsize >> /dev/null
 
 
 echo 'Executing the default join domain script..'
