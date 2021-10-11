@@ -8,7 +8,7 @@ rgname='domain-repro-rg'
 location='eastus'
 winsize='Standard_d2s_v3'
 linsize='Standard_b1ms'
-nsg_name='accessNSG'
+
 echo 'Welcome to the repro script ^_^'
 cat << EOF
 You can select both the image name for windows and the image name for Linux
@@ -213,7 +213,7 @@ echo 'Waiting for the windows machine for 2 min'
 sleep 120
 
 echo "Creating the Linux machine $linuxvmname" 
-az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-password $linpassword --image $linuximage --nsg $nsg_name --size $linsize >> /dev/null
+az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-password $linpassword --image $linuximage --nsg-rule SSH --size $linsize >> /dev/null
 
 
 echo 'Executing the default join domain script..'
