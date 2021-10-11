@@ -167,17 +167,6 @@ echo ''
 echo "Creating the resource group of name $rgname .."
 az group create --name $rgname --location $location >> /dev/null
 
-<<<<<<< HEAD
-myip=`curl https://api.ipify.org`
-az network nsg create --resource-group $rgname --location $location --name $nsg_name
-
-az network nsg rule create --name accessRule --nsg-name $nsg_name --resource-group $rgname \
-       --priority 100 --source-address-prefixes $myip/32  --source-port-ranges '*'    \
-       --destination-address-prefixes  '*'  --destination-port-ranges '22' '3389'          \
-       --direction Inbound --protocol Tcp
-
-=======
->>>>>>> 11dbd77ea92e1fe48d91a1f08dbeedd317fd4632
 if [ $winversion == '2k16' ]
 then
     if [ $distro == 'rhel8' ] || [ $distro == 'centos8' ]
@@ -193,11 +182,7 @@ then
 fi
 
 echo "Creating the Windows machine $winvmname"
-<<<<<<< HEAD
-az vm create -g $rgname -n $winvmname --admin-username $winusername --admin-password $winpassword --image $winimage --nsg $nsg_name --size $winsize >> /dev/null
-=======
 az vm create -g $rgname -n $winvmname --admin-username $winusername --admin-password $winpassword --image $winimage --nsg-rule RDP --size $winsize >> /dev/null
->>>>>>> 11dbd77ea92e1fe48d91a1f08dbeedd317fd4632
 
 echo "Preparing the domain join script, it will be created on same directory as this script"
 echo "NOTE: the password for Directory Services Restore Mode will be similar to the password used for the windows machine"
