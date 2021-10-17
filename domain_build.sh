@@ -215,9 +215,11 @@ sleep 120
 echo "Creating the Linux machine $linuxvmname" 
 az vm create -g $rgname -n $linuxvmname --admin-username $linusername --admin-password $linpassword --image $linuximage --nsg-rule SSH --size $linsize >> /dev/null
 
+echo "rewrite the windows password to add single quotas before sending it in the run command.."
+tempwinpassword=\'$winpassword\'
 
 echo 'Executing the default join domain script..'
-az vm run-command invoke -g $rgname -n $linuxvmname --command-id RunShellScript --scripts @$filename --parameters LAB.LOCAL $winusername $winpassword >> script_result.log
+az vm run-command invoke -g $rgname -n $linuxvmname --command-id RunShellScript --scripts @$filename --parameters LAB.LOCAL $winusername $tempwinpassword >> script_result.log
 
 if [ -f $filename ]
 then
